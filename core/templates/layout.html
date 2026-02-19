@@ -36,14 +36,16 @@
             <ul class="nav-links">
                 <li>
                     <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">
-                        <i class="fa-solid fa-dragon"></i>
+                         <img src="{{ url_for('core.static', filename='img/personajes.png') }}" alt="DB" class="characters-img">
                         <span>Personajes</span>
                     </a>
                 </li>
                 <li>
                     <a href="/YouTube/" class="nav-link {% if '/YouTube' in request.path %}active{% endif %}">
-                        <i class="fa-brands fa-youtube"></i>
-                        <span>Multimedia</span>
+                        
+                            <img src="{{ url_for('core.static', filename='img/dbYt3.png') }}" alt="DB" class="characters-img">
+                            <span>Multimedia</span>
+                     
                     </a>
                 </li>
             </ul>

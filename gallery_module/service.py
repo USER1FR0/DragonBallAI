@@ -7,7 +7,7 @@ BASE = BaseConfig.DB_API_URL
 class GalleryService:
     
     @staticmethod
-    def get_characters(page=1,limit=10, **filters):
+    def get_characters(page=1,limit=12, **filters):
 
         params = {"page": page, "limit": limit, **{k: v for k, v in filters.items() if v}}
         

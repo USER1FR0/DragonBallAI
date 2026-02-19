@@ -1,7 +1,7 @@
 {% extends "layout.html" %} {% block content %}
 <link
   rel="stylesheet"
-  href="{{ url_for('gallery.static', filename='gallery.css') }}"
+  href="{{ url_for('gallery.static', filename='css/gallery.css') }}"
 />
 
 <!-- ===== BUSCADOR Y FILTROS ===== -->
@@ -21,8 +21,7 @@
       <option value="">Todas las razas</option>
       {% for r in ["Saiyan", "Namekian", "Human", "Android", "Majin", "Frieza
       Race", "God", "Angel", "Evil", "Nucleico", "Unknown"] %}
-      <option value="{{ r }}"
-            {% if filters.race == r %}selected{% endif %}>
+      <option value="{{ r }}" {% if filters.race == r %}selected{% endif %}>
         {{ r }}
       </option>
       {% endfor %}
@@ -131,7 +130,7 @@
 </nav>
 {% endif %} {% else %}
 <div class="empty-state">
-  <i class="fa-solid fa-dragon"></i>
+   <img src="{{ url_for('gallery.static', filename='img/majinbuu2.png') }}" alt="DB" class="error-img">
   <p>No se encontraron personajes con esos filtros.</p>
   <a href="/">Volver al inicio</a>
 </div>
@@ -144,7 +143,10 @@
     <i class="fa-solid fa-xmark"></i>
   </button>
   <div class="modal-body" id="modalBody">
-    <div class="modal-loading"><i class="fa-solid fa-dragon fa-spin"></i></div>
+    <div class="modal-loading">
+      <!--i class="fa-solid fa-dragon fa-spin"></!i-->
+      <img src="{{ url_for('gallery.static', filename='img/radar.png') }}" alt="DB" class="loading-img"> 
+    </div>
   </div>
 </div>
 
@@ -156,7 +158,7 @@
     const body = document.getElementById("modalBody");
 
     body.innerHTML =
-      '<div class="modal-loading"><i class="fa-solid fa-dragon fa-spin"></i></div>';
+      '<div class="modal-loading"><img src="{{ url_for('gallery.static', filename='img/radar.png') }}" alt="DB" class="loading-img"> </div>';
     overlay.classList.add("show");
     modal.classList.add("show");
 
@@ -164,17 +166,21 @@
     const data = await res.json();
 
     const transforms = data.transformations?.length
-    ? `<div class="modal-transforms">
+      ? `<div class="modal-transforms">
         <h4>Transformaciones</h4>
         <div class="transform-list">
-            ${data.transformations.map(t => `
+            ${data.transformations
+              .map(
+                (t) => `
                 <div class="transform-item">
                     <img src="${t.image}" alt="${t.name}">
                     <span>${t.name}</span>
-                </div>`).join('')}
+                </div>`,
+              )
+              .join("")}
         </div>
        </div>`
-    : '';
+      : "";
 
     body.innerHTML = `
         <div class="modal-header">
@@ -194,12 +200,16 @@
                 <button class="btn-ask modal-ask" onclick="askAbout('${data.name}'); closeDetail();">
                     <i class="fa-solid fa-comment-dots"></i> Preguntar a la IA sobre ${data.name}
                 </button>
-                ${data.originPlanet ? `
+                ${
+                  data.originPlanet
+                    ? `
                 <button class="btn-planet" onclick="togglePlanet(this)" 
                     data-planet='${JSON.stringify(data.originPlanet)}'>
                     <i class="fa-solid fa-earth-americas"></i> Ver planeta de origen
                 </button>
-                <div class="planet-info" style="display:none"></div>` : ''}
+                <div class="planet-info" style="display:none"></div>`
+                    : ""
+                }
             </div>
         </div>
         ${transforms}
@@ -211,32 +221,34 @@
     document.getElementById("detailModal").classList.remove("show");
   }
 
-    function togglePlanet(btn) {
-        const panel = btn.nextElementSibling;
-        const p = JSON.parse(btn.dataset.planet);
-        if (panel.style.display === 'none') {
-            panel.innerHTML = `
+  function togglePlanet(btn) {
+    const panel = btn.nextElementSibling;
+    const p = JSON.parse(btn.dataset.planet);
+    if (panel.style.display === "none") {
+      panel.innerHTML = `
                 <img src="${p.image}" alt="${p.name}">
                 <div>
                     <strong>${p.name}</strong>
-                    <p>${p.description || ''}</p>
-                    ${p.isDestroyed ? '<span class="tag">💀 Destruido</span>' : ''}
+                    <p>${p.description || ""}</p>
+                    ${p.isDestroyed ? '<span class="tag">💀 Destruido</span>' : ""}
                 </div>`;
-            panel.style.display = 'flex';
-            btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Ocultar planeta';
-        } else {
-            panel.style.display = 'none';
-            btn.innerHTML = '<i class="fa-solid fa-earth-americas"></i> Ver planeta de origen';
-        }
+      panel.style.display = "flex";
+      btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Ocultar planeta';
+    } else {
+      panel.style.display = "none";
+      btn.innerHTML =
+        '<i class="fa-solid fa-earth-americas"></i> Ver planeta de origen';
     }
+  }
 
   let carIndex = 0;
-    function carMove(dir) {
-        const slides = document.querySelectorAll('.car-slide');
-        if (!slides.length) return;
-        carIndex = (carIndex + dir + slides.length) % slides.length;
-        document.getElementById('carTrack').style.transform = `translateX(-${carIndex * 100}%)`;
-    }
+  function carMove(dir) {
+    const slides = document.querySelectorAll(".car-slide");
+    if (!slides.length) return;
+    carIndex = (carIndex + dir + slides.length) % slides.length;
+    document.getElementById("carTrack").style.transform =
+      `translateX(-${carIndex * 100}%)`;
+  }
 </script>
 
 {% endblock %}

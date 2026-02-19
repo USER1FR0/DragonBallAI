@@ -19,7 +19,7 @@ def gallery_home():
     gender      = request.args.get("gender", "")
 
     data = GalleryService.get_characters(
-        page=page, limit=10,
+        page=page, limit=12,
         name=name, race=race,
         affiliation=affiliation, gender=gender
     )

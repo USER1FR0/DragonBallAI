@@ -10,7 +10,7 @@
     --gold:      #ffa01e;
     --gold-dim:  #c97a0f;
     --text:      #e8e0d0;
-    --text-muted:#7a7068;
+    --text-muted:#bdb887;
     --danger:    #e03030;
     --nav-h:     62px;
     --radius:    10px;
@@ -58,10 +58,10 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     height: 100%;
-    padding: 0 24px;
+    padding: 0 12px;
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 10px;
 }
 
 /* Logo */
@@ -90,8 +90,9 @@ body {
     box-shadow: 0 0 4px #fff;
 }
 
-/* 🔴 Si usas imagen en lugar del orb css: */
 .logo-img { width: 34px; height: 34px; object-fit: contain; }
+
+.characters-img { width: 50px; height: 40px; object-fit: contain; }
 
 .logo-text {
     font-family: 'Bebas Neue', sans-serif;
@@ -106,15 +107,15 @@ body {
 .nav-links {
     list-style: none;
     display: flex;
-    gap: 4px;
-    flex: 1;
+    gap: 10px;
+    flex: 0 1 auto;
 }
 
 .nav-link {
     display: flex;
     align-items: center;
-    gap: 7px;
-    padding: 6px 14px;
+    gap: 10px;
+    padding: 0px 8px;
     border-radius: 6px;
     text-decoration: none;
     color: var(--text-muted);
