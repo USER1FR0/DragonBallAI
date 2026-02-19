@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config.APP_NAME }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('core.static', filename='css/layout.css') }}">
+</head>
+<body>
+
+    <!-- Partículas de fondo (esferas del dragón) -->
+    <div class="bg-orbs" aria-hidden="true">
+        <span class="orb orb-1"></span>
+        <span class="orb orb-2"></span>
+        <span class="orb orb-3"></span>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-inner">
+
+            <!-- Logo -->
+            <a href="/" class="nav-logo">
+                <!-- 🔴 AQUÍ: coloca una imagen de la esfera de 4 estrellas si quieres -->
+                <img src="{{ url_for('core.static', filename='img/ed4.png') }}" alt="DB" class="logo-img"> 
+                <!--div class="logo-orb">
+                    <span class="star-dot"></span>
+                </!div-->
+                <span class="logo-text">Dragon<em>BALL</em>IA</span>
+            </a>
+
+            <!-- Links -->
+            <ul class="nav-links">
+                <li>
+                    <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                        <i class="fa-solid fa-dragon"></i>
+                        <span>Personajes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/YouTube/" class="nav-link {% if '/YouTube' in request.path %}active{% endif %}">
+                        <i class="fa-brands fa-youtube"></i>
+                        <span>Multimedia</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Chat toggle -->
+            <button class="chat-btn" id="chatToggle" title="Preguntar a Gemini">
+                <i class="fa-solid fa-comment-dots"></i>
+                <span>IA</span>
+            </button>
+
+        </div>
+    </nav>
+
+    <!-- BREADCRUMBS -->
+    {% if breadcrumbs %}
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-inner">
+            {% for crumb in breadcrumbs %}
+                {% if not loop.first %}<span class="crumb-sep"><i class="fa-solid fa-chevron-right"></i></span>{% endif %}
+                {% if crumb.url and not loop.last %}
+                    <a href="{{ crumb.url }}" class="crumb-link">{{ crumb.name }}</a>
+                {% else %}
+                    <span class="crumb-current">{{ crumb.name }}</span>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- CHAT LATERAL (Gemini) -->
+    <aside class="chat-panel" id="chatPanel">
+        <div class="chat-header">
+            <span><i class="fa-solid fa-hat-wizard"></i> Senzu AI</span>
+            <button class="chat-close" id="chatClose"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-bubble bot">
+                Hola, soy <strong>Senzu AI</strong>. Pregúntame cualquier curiosidad sobre Dragon Ball 🐉
+            </div>
+        </div>
+        <div class="chat-input-wrap">
+            <input type="text" id="chatInput" placeholder="Pregunta algo sobre Dragon Ball…" autocomplete="off">
+            <button id="chatSend"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </aside>
+    <div class="chat-overlay" id="chatOverlay"></div>
+
+    <script>
+        const toggle  = document.getElementById('chatToggle');
+        const panel   = document.getElementById('chatPanel');
+        const overlay = document.getElementById('chatOverlay');
+        const close   = document.getElementById('chatClose');
+
+        function openChat()  { panel.classList.add('open'); overlay.classList.add('show'); }
+        function closeChat() { panel.classList.remove('open'); overlay.classList.remove('show'); }
+
+        toggle.addEventListener('click', openChat);
+        close.addEventListener('click', closeChat);
+        overlay.addEventListener('click', closeChat);
+
+        // Exponer función para abrir chat con contexto de personaje
+        window.askAbout = function(name) {
+            const input = document.getElementById('chatInput');
+            input.value = `Cuéntame sobre ${name} en Dragon Ball`;
+            openChat();
+            input.focus();
+        };
+    </script>
+
+</body>
+</html>

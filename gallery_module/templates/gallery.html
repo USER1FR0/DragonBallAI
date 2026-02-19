@@ -1,0 +1,242 @@
+{% extends "layout.html" %} {% block content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('gallery.static', filename='gallery.css') }}"
+/>
+
+<!-- ===== BUSCADOR Y FILTROS ===== -->
+<form class="search-bar" method="GET" action="/">
+  <div class="search-input-wrap">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input
+      type="text"
+      name="name"
+      placeholder="Buscar personaje…"
+      value="{{ filters.name }}"
+    />
+  </div>
+
+  <div class="filters">
+    <select name="race">
+      <option value="">Todas las razas</option>
+      {% for r in ["Saiyan", "Namekian", "Human", "Android", "Majin", "Frieza
+      Race", "God", "Angel", "Evil", "Nucleico", "Unknown"] %}
+      <option value="{{ r }}"
+            {% if filters.race == r %}selected{% endif %}>
+        {{ r }}
+      </option>
+      {% endfor %}
+    </select>
+
+    <select name="affiliation">
+      <option value="">Todas las afiliaciones</option>
+      {% for a in ["Z Fighter", "Red Ribbon Army", "Namekian Warrior",
+      "Freelancer", "Army of Frieza", "Pride Troopers", "Assistant of Vermoud",
+      "Assistant of Beerus", "Villain"] %}
+      <option
+        value="{{ a }}"
+        {%
+        if
+        filters.affiliation == a
+        %}selected{%
+        endif
+        %}
+      >
+        {{ a }}
+      </option>
+      {% endfor %}
+    </select>
+
+    <select name="gender">
+      <option value="">Género</option>
+      <option
+        value="Male"
+        {%
+        if
+        filters.gender == Male
+        %}selected{%
+        endif
+        %}
+      >
+        Masculino
+      </option>
+      <option
+        value="Female"
+        {%
+        if
+        filters.gender == Female
+        %}selected{%
+        endif
+        %}
+      >
+        Femenino
+      </option>
+    </select>
+
+    <button type="submit" class="btn-filter">
+      <i class="fa-solid fa-filter"></i> Filtrar
+    </button>
+
+    {% if filters.name or filters.race or filters.affiliation or filters.gender
+    %}
+    <a href="/" class="btn-clear"><i class="fa-solid fa-xmark"></i> Limpiar</a>
+    {% endif %}
+  </div>
+</form>
+
+<!-- ===== GRID DE PERSONAJES ===== -->
+{% if characters %}
+<div class="char-grid">
+  {% for c in characters %}
+  <div class="char-card">
+    <div class="card-img-wrap">
+      <img src="{{ c.image }}" alt="{{ c.name }}" loading="lazy" />
+    </div>
+    <div class="card-body">
+      <h3 class="card-name">{{ c.name }}</h3>
+      <span class="card-race">{{ c.race }}</span>
+    </div>
+    <div class="card-actions">
+      <button class="btn-detail" onclick="openDetail({{ c.id }})">
+        <i class="fa-solid fa-circle-info"></i> Detalles
+      </button>
+      <button class="btn-ask" onclick="askAbout('{{ c.name }}')">
+        <i class="fa-solid fa-comment-dots"></i> Preguntar IA
+      </button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- ===== PAGINACIÓN ===== -->
+{% if meta.totalPages and meta.totalPages > 1 %}
+<nav class="pagination">
+  {% set cur = meta.currentPage %} {% set total = meta.totalPages %}
+
+  <a
+    href="?page={{ [cur-1, 1]|max }}&name={{ filters.name }}&race={{ filters.race }}&affiliation={{ filters.affiliation }}&gender={{ filters.gender }}"
+    class="pg-btn {% if cur == 1 %}disabled{% endif %}"
+  >
+    <i class="fa-solid fa-chevron-left"></i>
+  </a>
+
+  <span class="pg-info">{{ cur }} / {{ total }}</span>
+
+  <a
+    href="?page={{ [cur+1, total]|min }}&name={{ filters.name }}&race={{ filters.race }}&affiliation={{ filters.affiliation }}&gender={{ filters.gender }}"
+    class="pg-btn {% if cur == total %}disabled{% endif %}"
+  >
+    <i class="fa-solid fa-chevron-right"></i>
+  </a>
+</nav>
+{% endif %} {% else %}
+<div class="empty-state">
+  <i class="fa-solid fa-dragon"></i>
+  <p>No se encontraron personajes con esos filtros.</p>
+  <a href="/">Volver al inicio</a>
+</div>
+{% endif %}
+
+<!-- ===== MODAL DETALLES ===== -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeDetail()"></div>
+<div class="modal" id="detailModal">
+  <button class="modal-close" onclick="closeDetail()">
+    <i class="fa-solid fa-xmark"></i>
+  </button>
+  <div class="modal-body" id="modalBody">
+    <div class="modal-loading"><i class="fa-solid fa-dragon fa-spin"></i></div>
+  </div>
+</div>
+
+<script>
+  async function openDetail(id) {
+    carIndex = 0;
+    const overlay = document.getElementById("modalOverlay");
+    const modal = document.getElementById("detailModal");
+    const body = document.getElementById("modalBody");
+
+    body.innerHTML =
+      '<div class="modal-loading"><i class="fa-solid fa-dragon fa-spin"></i></div>';
+    overlay.classList.add("show");
+    modal.classList.add("show");
+
+    const res = await fetch(`/character/${id}`);
+    const data = await res.json();
+
+    const transforms = data.transformations?.length
+    ? `<div class="modal-transforms">
+        <h4>Transformaciones</h4>
+        <div class="transform-list">
+            ${data.transformations.map(t => `
+                <div class="transform-item">
+                    <img src="${t.image}" alt="${t.name}">
+                    <span>${t.name}</span>
+                </div>`).join('')}
+        </div>
+       </div>`
+    : '';
+
+    body.innerHTML = `
+        <div class="modal-header">
+            <img src="${data.image}" alt="${data.name}" class="modal-img">
+            <div class="modal-info">
+                <h2>${data.name}</h2>
+                <div class="modal-tags">
+                    <span class="tag">${data.race || "—"}</span>
+                    <span class="tag">${data.gender || "—"}</span>
+                    <span class="tag">${data.affiliation || "—"}</span>
+                </div>
+                <div class="modal-ki">
+                    <span><i class="fa-solid fa-bolt"></i> Ki: <strong>${data.ki || "—"}</strong></span>
+                    <span><i class="fa-solid fa-bolt"></i> Max Ki: <strong>${data.maxKi || "—"}</strong></span>
+                </div>
+                <p class="modal-desc">${data.description || "Sin descripción."}</p>
+                <button class="btn-ask modal-ask" onclick="askAbout('${data.name}'); closeDetail();">
+                    <i class="fa-solid fa-comment-dots"></i> Preguntar a la IA sobre ${data.name}
+                </button>
+                ${data.originPlanet ? `
+                <button class="btn-planet" onclick="togglePlanet(this)" 
+                    data-planet='${JSON.stringify(data.originPlanet)}'>
+                    <i class="fa-solid fa-earth-americas"></i> Ver planeta de origen
+                </button>
+                <div class="planet-info" style="display:none"></div>` : ''}
+            </div>
+        </div>
+        ${transforms}
+    `;
+  }
+
+  function closeDetail() {
+    document.getElementById("modalOverlay").classList.remove("show");
+    document.getElementById("detailModal").classList.remove("show");
+  }
+
+    function togglePlanet(btn) {
+        const panel = btn.nextElementSibling;
+        const p = JSON.parse(btn.dataset.planet);
+        if (panel.style.display === 'none') {
+            panel.innerHTML = `
+                <img src="${p.image}" alt="${p.name}">
+                <div>
+                    <strong>${p.name}</strong>
+                    <p>${p.description || ''}</p>
+                    ${p.isDestroyed ? '<span class="tag">💀 Destruido</span>' : ''}
+                </div>`;
+            panel.style.display = 'flex';
+            btn.innerHTML = '<i class="fa-solid fa-xmark"></i> Ocultar planeta';
+        } else {
+            panel.style.display = 'none';
+            btn.innerHTML = '<i class="fa-solid fa-earth-americas"></i> Ver planeta de origen';
+        }
+    }
+
+  let carIndex = 0;
+    function carMove(dir) {
+        const slides = document.querySelectorAll('.car-slide');
+        if (!slides.length) return;
+        carIndex = (carIndex + dir + slides.length) % slides.length;
+        document.getElementById('carTrack').style.transform = `translateX(-${carIndex * 100}%)`;
+    }
+</script>
+
+{% endblock %}
