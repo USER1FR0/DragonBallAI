@@ -472,6 +472,24 @@
     padding: 15px;
 }
 
+.btn-youtube {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 8px;
+    margin-top: 6px;
+    background: rgba(224, 48, 48, 0.12);
+    border: 1px solid rgba(224, 48, 48, 0.25);
+    border-radius: 6px;
+    color: #e03030;
+    font-size: .85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .2s;
+}
+.btn-youtube:hover { background: rgba(224, 48, 48, 0.25); }
 /* ---- PLANETA ---- */
 .btn-planet {
     width: 100%;

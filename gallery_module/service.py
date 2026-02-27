@@ -36,8 +36,3 @@ class GalleryService:
         except requests.RequestException as e:
             print(f"[GalleryService] get_character: {e}")
             return None
-            
-        
-        
-        
-        

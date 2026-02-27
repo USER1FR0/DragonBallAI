@@ -4,6 +4,7 @@ from gallery_module.routes import gallery_bp
 import os
 from youtube_module.routes import youtube_bp
 from core.routes import core_bp
+from chatbot_module.routes import chatbot_bp
 
 def create_app():
     app = Flask(
@@ -16,6 +17,7 @@ def create_app():
     app.register_blueprint(gallery_bp)
     app.register_blueprint(youtube_bp)
     app.register_blueprint(core_bp)
+    app.register_blueprint(chatbot_bp)
     print(core_bp.static_folder)
 
     

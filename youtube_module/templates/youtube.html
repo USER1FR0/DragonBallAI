@@ -1,7 +1,92 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('youtube.static', filename='youtube.css') }}">
 
-<h1> Multimedia </h1>
+<!-- BUSCADOR -->
+<form class="yt-search" method="GET" action="/youtube/">
+    <div class="search-input-wrap">
+        <i class="fa-brands fa-youtube" style="color:var(--danger)"></i>
+        <input type="text" name="q"
+               placeholder="Buscar en YouTube… (solo Dragon Ball)"
+               value="{{ query }}">
+    </div>
+    <button type="submit" class="btn-filter">
+        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+    </button>
+</form>
+
+<!-- PRESETS -->
+<div class="filters-wrap">
+    <div class="presets-wrap">
+        {% for p in presets %}
+        <a href="/youtube/?q={{ p | urlencode }}"
+           class="preset-tag {% if query == p %}active{% endif %}">
+            {{ p }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- GRID -->
+{% if videos %}
+<div class="yt-grid">
+    {% for v in videos %}
+    <div class="yt-card" onclick="openPlayer('{{ v.id }}', '{{ v.title | e }}')">
+        <div class="yt-thumb">
+            <img src="{{ v.thumbnail }}" alt="{{ v.title }}" loading="lazy">
+            <div class="yt-play"><i class="fa-solid fa-play"></i></div>
+        </div>
+        <div class="yt-info">
+            <p class="yt-title">{{ v.title }}</p>
+            <span class="yt-channel">
+                <i class="fa-solid fa-circle-user"></i> {{ v.channel }}
+            </span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div class="empty-state">
+    <i class="fa-brands fa-youtube"></i>
+    <p>No se encontraron videos.</p>
+</div>
+{% endif %}
+
+<!-- MODAL PLAYER -->
+<div class="modal-overlay" id="ytOverlay" onclick="closePlayer()"></div>
+<div class="modal yt-modal" id="ytModal">
+    <button class="modal-close" onclick="closePlayer()">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div class="yt-modal-title" id="ytTitle"></div>
+    <div class="yt-frame-wrap" id="ytFrame"></div>
+</div>
+
+<script>
+function openPlayer(id, title) {
+    document.getElementById('ytOverlay').classList.add('show');
+    document.getElementById('ytModal').classList.add('show');
+    document.getElementById('ytTitle').textContent = title;
+    document.getElementById('ytFrame').innerHTML =
+        `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1"
+            frameborder="0" allowfullscreen
+            allow="autoplay; encrypted-media"></iframe>`;
+    document.body.style.overflow = 'hidden';
+}
+
+function closePlayer() {
+    document.getElementById('ytOverlay').classList.remove('show');
+    document.getElementById('ytModal').classList.remove('show');
+    document.getElementById('ytFrame').innerHTML = '';
+    document.getElementById('ytTitle').textContent = '';
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closePlayer();
+});
+</script>
 
 {% endblock %}
