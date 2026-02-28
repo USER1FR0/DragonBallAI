@@ -4,18 +4,19 @@
    ============================================= */
 
 :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --border: rgba(255, 160, 30, 0.18);
-    --gold: #ffa01e;
-    --gold-dim: #c97a0f;
-    --text: #e8e0d0;
-    --text-muted: #bdb887;
-    --danger: #e03030;
-    --nav-h: 62px;
-    --radius: 10px;
-    --chat-w: 340px;
+    --bg:        #0a0a1a;
+    --surface:   #111128;
+    --border:    rgba(255, 180, 0, 0.3);
+    --gold:      #ffcc00;
+    --gold-dim:  #e6a800;
+    --text:      #ffffff;
+    --text-muted:#a090c0;
+    --danger:    #ff2200;
+    --nav-h:     62px;
+    --radius:    10px;
+    --chat-w:    340px;
 }
+
 
 *,
 *::before,
@@ -57,7 +58,7 @@ body {
 .orb-1 {
     width: 420px;
     height: 420px;
-    background: var(--gold);
+    background: #ff6600; opacity: .25;
     top: -120px;
     left: -80px;
 }
@@ -65,7 +66,7 @@ body {
 .orb-2 {
     width: 320px;
     height: 320px;
-    background: var(--danger);
+    background: #4400cc; opacity: .2;
     bottom: 10%;
     right: -60px;
 }
@@ -73,7 +74,7 @@ body {
 .orb-3 {
     width: 200px;
     height: 200px;
-    background: #f0c040;
+    background: #ffcc00; opacity: .15;
     top: 45%;
     left: 38%;
 }
